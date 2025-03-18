@@ -4,8 +4,13 @@ import os
 from fpdf import FPDF
 import io
 
+from openai import OpenAI
+# Avainsana tentin aloittamiseen
+REQUIRED_KEYWORD = "medtentti"
 # Aseta OpenAI API Key ympäristömuuttujasta
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Alusta session_state-muuttujat
 if "exam_questions" not in st.session_state:
@@ -20,8 +25,18 @@ if "final_analysis" not in st.session_state:
     st.session_state.final_analysis = ""
 
 # Sovelluksen otsikko
-st.title("Lääketieteellinen kaksivaiheinen tenttisovellus")
+st.title("Lääketieteellinen tenttisovellus GPT4o/PH2025")
+st.write("Tenttibotti on ulkoinen palvelu, se ei tallenna mitään mutta käytön rajaamiseksi on luotu avainsana")
 
+if not st.session_state.authenticated:
+    user_keyword = st.text_input("Syötä avainsana:", type="password")
+    if st.button("✅ Jatka"):
+        if user_keyword == REQUIRED_KEYWORD:
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("❌ Virheellinen avainsana. Yritä uudelleen.")
+    st.stop()
 st.markdown("### 1. Anna tentin aihealue ja opiskelijataso")
 
 subject_area = st.text_input("Aihealue (esim. fysiologia, sisätaudit, genetiikka):")
@@ -92,10 +107,15 @@ if st.button("Luo tentti"):
     if subject_area and student_level:
         with st.spinner("Tenttiä laaditaan..."):
             prompt = build_exam_prompt(subject_area, student_level)
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="gpt-4o",
                 messages=[{"role": "user", "content": prompt}]
             )
+            
+#            response = openai.ChatCompletion.create(
+#                model="gpt-4o",
+#                messages=[{"role": "user", "content": prompt}]
+#            )
             exam_text = response.choices[0].message["content"]
             st.session_state.exam_questions = exam_text
             st.session_state.answers_submitted = False
@@ -127,10 +147,15 @@ if st.session_state.exam_questions:
                 st.session_state.student_answers_mcq,
                 st.session_state.student_answers_short
             )
-            analysis_response = openai.ChatCompletion.create(
+
+            analysis_response = client.chat.completions.create(
                 model="gpt-4o",
                 messages=[{"role": "user", "content": analysis_prompt}]
             )
+#            analysis_response = openai.ChatCompletion.create(
+#                model="gpt-4o",
+#                messages=[{"role": "user", "content": analysis_prompt}]
+#            )
             analysis_text = analysis_response.choices[0].message["content"]
             st.session_state.final_analysis = analysis_text
             st.session_state.answers_submitted = True
