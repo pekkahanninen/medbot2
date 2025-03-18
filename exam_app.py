@@ -8,6 +8,8 @@ from openai import OpenAI
 # Avainsana tentin aloittamiseen
 REQUIRED_KEYWORD = "medtentti"
 # Aseta OpenAI API Key ympäristömuuttujasta
+
+api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")
