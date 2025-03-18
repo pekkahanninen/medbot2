@@ -122,7 +122,8 @@ if st.button("Luo tentti"):
 #                model="gpt-4o",
 #                messages=[{"role": "user", "content": prompt}]
 #            )
-            exam_text = response.choices[0].message["content"]
+#            exam_text = response.choices[0].message["content"]
+            exam_text = response.choices[0].message.content
             st.session_state.exam_questions = exam_text
             st.session_state.answers_submitted = False
     else:
@@ -162,7 +163,8 @@ if st.session_state.exam_questions:
 #                model="gpt-4o",
 #                messages=[{"role": "user", "content": analysis_prompt}]
 #            )
-            analysis_text = analysis_response.choices[0].message["content"]
+#            analysis_text = analysis_response.choices[0].message["content"]
+            analysis_text = analysis_response.choices[0].message.content
             st.session_state.final_analysis = analysis_text
             st.session_state.answers_submitted = True
 
