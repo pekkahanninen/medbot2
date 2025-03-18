@@ -60,15 +60,13 @@ def generate_questions():
         f"Luo tentti biolääketieteen opiskelijoille. Tentti on aihealue on {st.session_state.selected_field} keskeiset kysymykset"
         "Kysymysten tulee kattaa tämän alan keskeiset aiheet, jotka ovat biolääketieteellisesti merkittäviä ja opetuksessa painotettuja."
         "Tentti sisältää 4 merkityksellistä monivalintakysymystä ja 2 lyhyen vastauksen sanallista kysymystä, jotka vaativat päättelyä. "
-        "Vältä monivalintakysymyksissä vastakkaisia vaihtoehtoja, kuten 'lihavuus' ja 'laihtuminen'. "
+        "Vältä monivalintakysymyksissä vastakkaisia vaihtoehtoja."
         "Kysymysten tulee olla vaikeita ja vaatia syvällistä biolääketieteellistä perusosaamista. "
-        "Tee korkeintaan 2 potilastapausta, muut kysymykset alan perusteista."
-        "Mikäli kysymyksessä on potilastapaus, kuvaa potilaan ikä, sukupuoli, oireet, mahdolliset riskitekijät, löydökset ja ensivaiheen tutkimukset." 
-        "Ota kliinisten vaihtoehtojen valinnassa huomioon eri ikäisille potilaille tarvittavat erilaiset hoidot." 
+        "Vältä potilastapauksia - keskity alan perusosaamiseen."
         "Älä käytä triviaalien yksityiskohtien tai harvinaisten oireyhtymien kysymyksiä.\n\n"
 ### **Monivalintakysymysten lisävaatimukset:**  
         "Väärien vastausvaihtoehtojen tulee olla uskottavia: vältä liian ilmeisiä tai triviaaleja vaihtoehtoja. " 
-        "Käytä harhaanjohtavia mutta todennäköisiä virhevaihtoehtoja, kuten yleisiä erotusdiagnostisia virheitä."  
+        "Käytä harhaanjohtavia mutta todennäköisiä virhevaihtoehtoja"  
         "Kysymysten tulee mitata syvempää ymmärrystä eikä vain faktamuistia."  
 ### **Lyhyen vastauksen kysymysten lisävaatimukset:**  
         "Vaadi päättelyä ja syy-seuraussuhteiden ymmärtämistä. Keskity kysymyksissä alan ydinsisältöihin." 
