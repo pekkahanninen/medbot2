@@ -1,7 +1,5 @@
 import streamlit as st
 import os
-from fpdf import FPDF
-import io
 from openai import OpenAI
 
 # Luo OpenAI client
@@ -71,18 +69,6 @@ Tarkista vastaukset. Arvioi jokainen kysymys erikseen:
 - Laske kokonaispistemäärä asteikolla 0–10 pistettä (4 pistettä MCQ + 6 pistettä sanalliset)
 """
 
-def create_pdf(text):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.set_font("Arial", size=12)
-    for line in text.split("\n"):
-        pdf.multi_cell(0, 10, line)
-    buffer = io.BytesIO()
-    pdf.output(buffer)
-    buffer.seek(0)
-    return buffer
-
 # Luo tentti -painike
 st.markdown("### 2. Luo tentti")
 
@@ -109,8 +95,6 @@ if st.session_state.exam_questions:
     st.markdown(st.session_state.exam_questions)
 
     st.download_button("Lataa tentti .txt", data=st.session_state.exam_questions, file_name="tentti.txt", mime="text/plain")
-    pdf_bytes = create_pdf(st.session_state.exam_questions)
-    st.download_button("Lataa tentti .pdf", data=pdf_bytes, file_name="tentti.pdf", mime="application/pdf")
 
     st.markdown("### 3. Opiskelijan vastaukset")
 
@@ -144,5 +128,3 @@ if st.session_state.answers_submitted:
     st.markdown(st.session_state.final_analysis)
 
     st.download_button("Lataa analyysi .txt", data=st.session_state.final_analysis, file_name="vastausanalyysi.txt", mime="text/plain")
-    pdf_analysis = create_pdf(st.session_state.final_analysis)
-    st.download_button("Lataa analyysi .pdf", data=pdf_analysis, file_name="vastausanalyysi.pdf", mime="application/pdf")
