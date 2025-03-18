@@ -5,13 +5,12 @@ from fpdf import FPDF
 import io
 
 from openai import OpenAI
+
 # Avainsana tentin aloittamiseen
 REQUIRED_KEYWORD = "medtentti"
 
 # Haetaan OpenAI API-avain ympäristömuuttujasta
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-client = openai.Client(api_key=openai.api_key)  # Käytetään ympäristömuuttujaa
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -118,11 +117,6 @@ if st.button("Luo tentti"):
                 messages=[{"role": "user", "content": prompt}]
             )
             
-#            response = openai.ChatCompletion.create(
-#                model="gpt-4o",
-#                messages=[{"role": "user", "content": prompt}]
-#            )
-#            exam_text = response.choices[0].message["content"]
             exam_text = response.choices[0].message.content
             st.session_state.exam_questions = exam_text
             st.session_state.answers_submitted = False
@@ -159,11 +153,6 @@ if st.session_state.exam_questions:
                 model="gpt-4o",
                 messages=[{"role": "user", "content": analysis_prompt}]
             )
-#            analysis_response = openai.ChatCompletion.create(
-#                model="gpt-4o",
-#                messages=[{"role": "user", "content": analysis_prompt}]
-#            )
-#            analysis_text = analysis_response.choices[0].message["content"]
             analysis_text = analysis_response.choices[0].message.content
             st.session_state.final_analysis = analysis_text
             st.session_state.answers_submitted = True
