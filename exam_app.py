@@ -7,10 +7,12 @@ import io
 from openai import OpenAI
 # Avainsana tentin aloittamiseen
 REQUIRED_KEYWORD = "medtentti"
-# Aseta OpenAI API Key ympäristömuuttujasta
 
-api_key = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Haetaan OpenAI API-avain ympäristömuuttujasta
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+client = openai.Client(api_key=openai.api_key)  # Käytetään ympäristömuuttujaa
+
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")
 
