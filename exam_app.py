@@ -1,23 +1,13 @@
 import streamlit as st
-import openai
 import os
 from fpdf import FPDF
 import io
-
 from openai import OpenAI
 
-# Avainsana tentin aloittamiseen
-REQUIRED_KEYWORD = "medtentti"
-
-# Haetaan OpenAI API-avain ympäristömuuttujasta
+# Luo OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-
-# openai.api_key = os.getenv("OPENAI_API_KEY")
-
 # Alusta session_state-muuttujat
-if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
 if "exam_questions" not in st.session_state:
     st.session_state.exam_questions = ""
 if "answers_submitted" not in st.session_state:
@@ -30,18 +20,8 @@ if "final_analysis" not in st.session_state:
     st.session_state.final_analysis = ""
 
 # Sovelluksen otsikko
-st.title("Lääketieteellinen tenttisovellus GPT4o/PH2025")
-st.write("Tenttibotti on ulkoinen palvelu, se ei tallenna mitään mutta käytön rajaamiseksi on luotu avainsana")
+st.title("Lääketieteellinen kaksivaiheinen tenttisovellus")
 
-if not st.session_state.authenticated:
-    user_keyword = st.text_input("Syötä avainsana:", type="password")
-    if st.button("✅ Jatka"):
-        if user_keyword == REQUIRED_KEYWORD:
-            st.session_state.authenticated = True
-            st.rerun()
-        else:
-            st.error("❌ Virheellinen avainsana. Yritä uudelleen.")
-    st.stop()
 st.markdown("### 1. Anna tentin aihealue ja opiskelijataso")
 
 subject_area = st.text_input("Aihealue (esim. fysiologia, sisätaudit, genetiikka):")
@@ -66,7 +46,6 @@ Vältä johtavia tai vastakkaisia vaihtoehtoja (esim. 'lisääntyy' vs. 'vähene
 Sanallisten kysymysten vastaukset tulee pisteyttää asteikolla 0–3 pistettä. Älä sisällytä vielä oikeita vastauksia. Palauta vain kysymykset.
 """
 
-# Tarkistusvaiheen prompt
 def build_analysis_prompt(original_exam, mcq_answers, short_answers):
     return f"""
 Tässä on opiskelijan vastaukset lääketieteen tenttiin.
@@ -92,7 +71,6 @@ Tarkista vastaukset. Arvioi jokainen kysymys erikseen:
 - Laske kokonaispistemäärä asteikolla 0–10 pistettä (4 pistettä MCQ + 6 pistettä sanalliset)
 """
 
-# PDF-muodostus
 def create_pdf(text):
     pdf = FPDF()
     pdf.add_page()
@@ -111,15 +89,17 @@ st.markdown("### 2. Luo tentti")
 if st.button("Luo tentti"):
     if subject_area and student_level:
         with st.spinner("Tenttiä laaditaan..."):
-            prompt = build_exam_prompt(subject_area, student_level)
-            response = client.chat.completions.create(
-                model="gpt-4o",
-                messages=[{"role": "user", "content": prompt}]
-            )
-            
-            exam_text = response.choices[0].message.content
-            st.session_state.exam_questions = exam_text
-            st.session_state.answers_submitted = False
+            try:
+                prompt = build_exam_prompt(subject_area, student_level)
+                response = client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                exam_text = response.choices[0].message.content
+                st.session_state.exam_questions = exam_text
+                st.session_state.answers_submitted = False
+            except Exception as e:
+                st.error(f"Tentin generointi epäonnistui: {e}")
     else:
         st.warning("Anna aihealue ja opiskelijataso ennen tentin luontia.")
 
@@ -140,24 +120,25 @@ if st.session_state.exam_questions:
     for i in range(2):
         st.session_state.student_answers_short[i] = st.text_area(f"Sanallinen vastaus {i+1}:", value=st.session_state.student_answers_short[i])
 
-    # Tarkistus
     if st.button("Tarkista vastaukset"):
         with st.spinner("Tarkistetaan vastauksia..."):
-            analysis_prompt = build_analysis_prompt(
-                st.session_state.exam_questions,
-                st.session_state.student_answers_mcq,
-                st.session_state.student_answers_short
-            )
+            try:
+                analysis_prompt = build_analysis_prompt(
+                    st.session_state.exam_questions,
+                    st.session_state.student_answers_mcq,
+                    st.session_state.student_answers_short
+                )
+                analysis_response = client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[{"role": "user", "content": analysis_prompt}]
+                )
+                analysis_text = analysis_response.choices[0].message.content
+                st.session_state.final_analysis = analysis_text
+                st.session_state.answers_submitted = True
+            except Exception as e:
+                st.error(f"Vastausten tarkistus epäonnistui: {e}")
 
-            analysis_response = client.chat.completions.create(
-                model="gpt-4o",
-                messages=[{"role": "user", "content": analysis_prompt}]
-            )
-            analysis_text = analysis_response.choices[0].message.content
-            st.session_state.final_analysis = analysis_text
-            st.session_state.answers_submitted = True
-
-# Näytä analyysi
+# Näytä vastausanalyysi
 if st.session_state.answers_submitted:
     st.markdown("### Vastausanalyysi ja palaute:")
     st.markdown(st.session_state.final_analysis)
