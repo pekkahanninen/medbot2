@@ -78,8 +78,10 @@ def create_pdf(text):
     pdf.set_font("Arial", size=12)
     for line in text.split("\n"):
         pdf.multi_cell(0, 10, line)
-    pdf_output = pdf.output(dest='S').encode('latin-1')
-    return io.BytesIO(pdf_output)
+    buffer = io.BytesIO()
+    pdf.output(buffer)
+    buffer.seek(0)
+    return buffer
 
 # Luo tentti -painike
 st.markdown("### 2. Luo tentti")
