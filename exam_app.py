@@ -44,7 +44,7 @@ if not st.session_state.authenticated:
     st.stop()
 
 # **2️⃣ Erikoisalan valinta**
-st.write("AI:n promptausta varten tarvitsen tarkemman alan kuvauksen - esim: Sisätaudit, silmätaudit, endokrinologia tai jokin muu täsmennys")
+st.write("AI:n promptausta varten tarvitsen tarkemman alan kuvauksen - esim: Biolääketiede, Fysiologia tai jokin muu täsmennys")
 
 if not st.session_state.selected_field:
     selected_field = st.text_input("Kirjoita lääketieteen alan tarkempi määritelmä:")
@@ -55,13 +55,14 @@ if not st.session_state.selected_field:
 
 # **3️⃣ Tenttikysymysten generointi**
 def generate_questions():
-    """Generoi 4 monivalintakysymystä ja 2 sanallista kysymystä valitun annetun lääketieteen alan perusteella."""
+    """Generoi 4 monivalintakysymystä ja 2 sanallista kysymystä valitun annetun lääketieteen tai biolääketieteen alan perusteella."""
     prompt = (
-        f"Luo tentti lääketieteen opiskelijoille. Tentti on aihealue on {st.session_state.selected_field} keskeiset kysymykset"
-        "Kysymysten tulee kattaa tämän alan keskeiset aiheet, jotka ovat lääketieteellisesti merkittäviä ja opetuksessa painotettuja."
+        f"Luo tentti biolääketieteen opiskelijoille. Tentti on aihealue on {st.session_state.selected_field} keskeiset kysymykset"
+        "Kysymysten tulee kattaa tämän alan keskeiset aiheet, jotka ovat biolääketieteellisesti merkittäviä ja opetuksessa painotettuja."
         "Tentti sisältää 4 merkityksellistä monivalintakysymystä ja 2 lyhyen vastauksen sanallista kysymystä, jotka vaativat päättelyä. "
         "Vältä monivalintakysymyksissä vastakkaisia vaihtoehtoja, kuten 'lihavuus' ja 'laihtuminen'. "
         "Kysymysten tulee olla vaikeita ja vaatia syvällistä biolääketieteellistä perusosaamista. "
+        "Tee korkeintaan 2 potilastapausta, muut kysymykset alan perusteista."
         "Mikäli kysymyksessä on potilastapaus, kuvaa potilaan ikä, sukupuoli, oireet, mahdolliset riskitekijät, löydökset ja ensivaiheen tutkimukset." 
         "Ota kliinisten vaihtoehtojen valinnassa huomioon eri ikäisille potilaille tarvittavat erilaiset hoidot." 
         "Älä käytä triviaalien yksityiskohtien tai harvinaisten oireyhtymien kysymyksiä.\n\n"
