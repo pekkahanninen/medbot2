@@ -17,6 +17,8 @@ client = openai.Client(api_key=openai.api_key)  # Käytetään ympäristömuuttu
 # openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Alusta session_state-muuttujat
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
 if "exam_questions" not in st.session_state:
     st.session_state.exam_questions = ""
 if "answers_submitted" not in st.session_state:
