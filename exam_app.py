@@ -29,7 +29,7 @@ if "questions" not in st.session_state:
     st.session_state.submitted = False
 
 # **1️⃣ Avainsana ennen tenttiä**
-st.title("🩺 Lääketieteen tenttibotti testaukseen - GPT-4o/PH25/v2biol")
+st.title("🩺 Lääketieteen tenttibotti testaukseen - GPT-5/PH25/v2biol")
 st.write("Tenttibotti on ulkoinen palvelu, se ei tallenna mitään mutta käytön rajaamiseksi on luotu avainsana")
 st.write("Voit luoda tentin niin monta kertaa kuin haluat - tentin jälkeen saat koodin, jolla voit todistaa tehneesi tentin")
 
@@ -85,7 +85,7 @@ def generate_questions():
     )
 
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-5",
         messages=[{"role": "user", "content": prompt}]
     )
 
